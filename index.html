@@ -85,14 +85,14 @@
 
         function draw(){
             //translate(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
-            var dp = pos - p;
-            console.log(pos);
-            p += dp;
+            var dp = Math.round(pos * 1000) / 1000 - Math.round(p * 1000) / 1000;
+            console.log(p);
+            p += dp * easing;
 
             if (dp != 0){
                 left = document.getElementById("draw").offsetWidth/2;
                 origin_top = document.getElementById("draw").offsetHeight/2;
-                canva_angle = (canva_angle-p)%360;
+                canva_angle = (canva_angle-p*10)%360;
                 //console.log(canva_angle);
                 document.getElementById("draw").style.transform = "rotate("+canva_angle+"deg)";
                 for (let i=0 ; i < fibs.length-2 ; i++){
@@ -130,7 +130,10 @@
                         origin_top += scaledFib;
                         state = 0;
                     }
-
+                    
+                    if (i > 10){
+                        divs[i].innerHTML = i;
+                    }
                     // if (i>10){
                     //     divs[i].innerHTML = "";
                     //     const node = document.getElementById("clone");
@@ -151,13 +154,14 @@
             } else {
                 //console.log("bigger "+scale);
                 scale = phi ** (p%360/90);
-                scale += (dp * easing)/90 * phi * 0.001;
+                scale += (dp * easing)/90 * phi * 0.0000001;
             }
   
         }
         initFib();
         initDiv();
         draw(); 
+        setInterval(draw , 10);
         addEventListener('wheel', (event) => {
             event.preventDefault();
             //console.log(event.deltaY);
