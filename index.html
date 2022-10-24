@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #draw{
+            width: 80%;
+            height: 80%;
+            position: fixed;
+            left: 10%;
+            top: 10%;
+            transform-origin: center;
+            /* border-style: solid; */
+        }
+        .box{
+            border-style: solid;
+            display: inline-block;
+            left: 50%;
+            top: 50%;
+            position: fixed;
+            transform-origin: center;
+        }
+        .inside{
+            word-wrap: break-word
+        }
+    </style>
+</head>
+<body>
+    <div id="draw">
+
+    </div>
+    <div id="clone" style="display:none;width: 100%;height: 100%;">
+        <h1 style="left:10%;position: fixed;"> rotate </h1>
+        <img src="https://media.tenor.com/o39q7qPq24gAAAAM/k-on-yui.gif" style="width: auto;height: 50%;top: 50%;position: fixed;">
+        <p style="position: fixed; top: 50%; left: 70%;overflow-wrap: break-word;">weeeeeeee</p>
+    </div>
+    <script>
+        let fibs = [1, 1];
+        const fibLen = 17;
+        let divs = [];
+        let angle = 0;
+        let scale = 1;
+
+        let state = 0;
+        let left = document.getElementById("draw").offsetWidth/2;
+        let origin_top = document.getElementById("draw").offsetHeight/2;
+
+        let pos = 0.3;
+        var phi;
+
+        let p = 0;
+        let easing = 0.3;
+
+        let canva_angle = 0;
+
+        let minScale;
+        let maxScale;
+
+        function test(num){
+            pos += num;
+            console.log("=== change ===");
+            draw();
+        }
+        
+        function initDiv(){
+            for (let i = 0; i < fibLen; i++) {
+                let div = document.createElement('div');
+                div.setAttribute("id", "Div"+i);
+                div.setAttribute("class", "box");
+    
+                let parent = document.getElementById("draw");
+                console.log(div);
+                console.log(parent);
+                parent.appendChild(div);
+                divs.push(div);
+            }
+        }
+        function initFib(){
+            for (let i = 0; i < fibLen; i++) {
+                fibs.push(fibs[fibs.length - 1] + fibs[fibs.length - 2]);
+            }
+            phi = fibs[fibLen-1] / fibs[fibLen-2];
+            minScale = fibs[fibLen - 5] / fibs[fibLen - 1];
+            maxScale = fibs[fibLen - 1] / fibs[fibLen - 5];
+        }
+
+        function draw(){
+            //translate(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+            var dp = pos - p;
+            console.log(pos);
+            p += dp;
+
+            if (dp != 0){
+                left = document.getElementById("draw").offsetWidth/2;
+                origin_top = document.getElementById("draw").offsetHeight/2;
+                canva_angle = (canva_angle-p)%360;
+                //console.log(canva_angle);
+                document.getElementById("draw").style.transform = "rotate("+canva_angle+"deg)";
+                for (let i=0 ; i < fibs.length-2 ; i++){
+                    const scaledFib = fibs[i] * scale;
+                    if (state == 0){
+                        divs[i].style.top = origin_top+"px";
+                        divs[i].style.left = left+"px";
+                        divs[i].style.width = scaledFib+"px";
+                        divs[i].style.height = scaledFib+"px";
+                        left += scaledFib;
+                        origin_top += scaledFib;
+                        state = 1;
+                    }else if (state == 1){
+                        divs[i].style.top = (origin_top-scaledFib)+"px";
+                        divs[i].style.left = left+"px";
+                        divs[i].style.width = scaledFib+"px";
+                        divs[i].style.height = scaledFib+"px";
+                        left += scaledFib;
+                        origin_top -= scaledFib;
+                        state = 2;
+                    }else if (state == 2){
+                        divs[i].style.top = (origin_top-scaledFib)+"px";
+                        divs[i].style.left = (left-scaledFib)+"px";
+                        divs[i].style.width = scaledFib+"px";
+                        divs[i].style.height = scaledFib+"px";
+                        left -= scaledFib;
+                        origin_top -= scaledFib;
+                        state = 3;
+                    }else if (state == 3){
+                        divs[i].style.top = origin_top+"px";
+                        divs[i].style.left = (left-scaledFib)+"px";
+                        divs[i].style.width = scaledFib+"px";
+                        divs[i].style.height = scaledFib+"px";
+                        left -= scaledFib;
+                        origin_top += scaledFib;
+                        state = 0;
+                    }
+
+                    // if (i>10){
+                    //     divs[i].innerHTML = "";
+                    //     const node = document.getElementById("clone");
+                    //     console.log(node);
+                    //     const clone = node.cloneNode(true);
+                    //     clone.style = "";
+                    //     divs[i].appendChild(clone);
+                    // }
+                    angle = (angle-90)%360;
+                    divs[i].style.transform = "rotate("+angle+"deg)";                    
+                }
+            }
+            if (scale <= minScale || scale >= maxScale) {
+                console.log("reinit");
+                fibs = [1, 1];
+                initFib();
+                scale = 1;
+            } else {
+                //console.log("bigger "+scale);
+                scale = phi ** (p%360/90);
+                scale += (dp * easing)/90 * phi * 0.001;
+            }
+  
+        }
+        initFib();
+        initDiv();
+        draw(); 
+        addEventListener('wheel', (event) => {
+            event.preventDefault();
+            //console.log(event.deltaY);
+            pos += event.deltaY*0.00001;
+            draw();
+        } ,  { passive: false });
+        console.log(minScale , maxScale);
+    </script>
+</body>
+</html>
