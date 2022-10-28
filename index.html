@@ -18,6 +18,7 @@
             top: 50%;
             position: fixed;
             transform-origin: center;
+            overflow: auto;
         }
         .inside{
             word-wrap: break-word
@@ -132,7 +133,7 @@
                         state = 0;
                     }
                     
-                    if (i > 3){
+                    if (i > 10){
                         divs[i].innerHTML = "Once upon a time, there is a man call tkt. People call him -- the son of the father of tkt. He loves CP (Competitive programming). and he is a lo-li-con (Logarithmic Linear contributer). One day he was caught by fbi because of his suspicious behaviour";
                         //divs[i].style = "font-size:10%";
                     }
@@ -145,7 +146,7 @@
                     //     divs[i].appendChild(clone);
                     // }
                     angle = (angle-90)%360;
-                    divs[i].style.transform = "rotate("+angle+"deg)";                    
+                    // divs[i].style.transform = "rotate("+angle+"deg)";                    
                 }
             }
             if (scale <= minScale || scale >= maxScale) {
